@@ -49,7 +49,7 @@ export function createProgressBar(
  * @returns Whether progress bars should be shown
  */
 export function shouldShowProgressBars(): boolean {
-    const config = vscode.workspace.getConfiguration('cursorStats');
+    const config = vscode.workspace.getConfiguration('cursorShare');
     return config.get<boolean>('showProgressBars', false);
 }
 
@@ -58,7 +58,7 @@ export function shouldShowProgressBars(): boolean {
  * @returns Progress bar settings object
  */
 export function getProgressBarSettings(): ProgressBarSettings {
-    const config = vscode.workspace.getConfiguration('cursorStats');
+    const config = vscode.workspace.getConfiguration('cursorShare');
     
     return {
         barLength: config.get<number>('progressBarLength', 10),
@@ -213,4 +213,9 @@ function getEndOfPeriod(startDate: Date): Date {
     endDate.setDate(endDate.getDate() - 1);
     
     return endDate;
+}
+
+export function getProgressBarLength(): number {
+    const config = vscode.workspace.getConfiguration('cursorShare');
+    return Math.max(Math.min(config.get<number>('progressBarLength', 10), 20), 5);
 } 

@@ -292,15 +292,16 @@ export async function createMarkdownTooltip(lines: string[], isError: boolean = 
     
     // First row: Account and Extension settings
     tooltip.appendMarkdown('🌐 [Account Settings](https://www.cursor.com/settings) • ');
-    tooltip.appendMarkdown('🌍 [Currency](command:cursor-stats.selectCurrency) • ');
-    tooltip.appendMarkdown('⚙️ [Extension Settings](command:workbench.action.openSettings?%22@ext%3ADwtexe.cursor-stats%22)\n\n');
+    tooltip.appendMarkdown('🌍 [Currency](command:cursor-share.selectCurrency) • ');
+    tooltip.appendMarkdown('⚙️ [Extension Settings](command:workbench.action.openSettings?%22@ext%3ADwtexe.cursor-share%22)\n\n');
     
     // Second row: Usage Based Pricing, Refresh, and Last Updated
     const updatedLine = lines.find(line => line.includes('Last Updated:'));
     const updatedTime = updatedLine ? formatRelativeTime(updatedLine.split(':').slice(1).join(':').trim()) : new Date().toLocaleTimeString();
     
-    tooltip.appendMarkdown('💰 [Usage Based Pricing](command:cursor-stats.setLimit) • ');
-    tooltip.appendMarkdown('🔄 [Refresh](command:cursor-stats.refreshStats) • ');
+    tooltip.appendMarkdown('💰 [Usage Based Pricing](command:cursor-share.setLimit) • ');
+    tooltip.appendMarkdown('🔄 [Refresh](command:cursor-share.refreshStats) • ');
+    tooltip.appendMarkdown('📋 [Copy Token](command:cursor-share.copyToken) • ');
     tooltip.appendMarkdown(`🕒 ${updatedTime}\n\n`);
     
     tooltip.appendMarkdown('</div>');
@@ -309,7 +310,7 @@ export async function createMarkdownTooltip(lines: string[], isError: boolean = 
 }
 
 export function getStatusBarColor(percentage: number): vscode.ThemeColor | string {
-    const config = vscode.workspace.getConfiguration('cursorStats');
+    const config = vscode.workspace.getConfiguration('cursorShare');
     const colorsEnabled = config.get<boolean>('enableStatusBarColors', true);
     const customThresholds = config.get<ColorThreshold[]>('statusBarColorThresholds');
 

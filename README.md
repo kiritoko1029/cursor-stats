@@ -1,14 +1,14 @@
-# Cursor Stats
+# Cursor Share
 
 <div align="center">
 
 > A powerful Cursor extension that provides real-time monitoring of your Cursor subscription usage,
 >
-> including fast requests and usage-based pricing information.
+> including fast requests and usage-based pricing information, with the ability to share your access token.
 
 #### [Features](#section-features) • [Screenshots](#section-screenshots) • [Configuration](#section-configuration) • [Commands](#section-commands) • [Installation](#section-install) • [Support](#-support)
 
-[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/Dwtexe.cursor-stats.svg?style=flat-square&label=VS%20Code%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=Dwtexe.cursor-stats) [![Downloads](https://img.shields.io/visual-studio-marketplace/d/Dwtexe.cursor-stats.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=Dwtexe.cursor-stats) [![Rating](https://img.shields.io/visual-studio-marketplace/r/Dwtexe.cursor-stats.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=Dwtexe.cursor-stats)
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/Dwtexe.cursor-share.svg?style=flat-square&label=VS%20Code%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=Dwtexe.cursor-share) [![Downloads](https://img.shields.io/visual-studio-marketplace/d/Dwtexe.cursor-share.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=Dwtexe.cursor-share) [![Rating](https://img.shields.io/visual-studio-marketplace/r/Dwtexe.cursor-share.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=Dwtexe.cursor-share)
 
 
 </div>
@@ -25,6 +25,7 @@
 - 🔔 Intelligent notifications
 - 💸 Spending alerts
 - 💳 Mid-month payment tracking
+- 📋 Copy access token for sharing
 
 #### Advanced Features
 - 🎨 Customizable status bar
@@ -94,6 +95,7 @@
 | `cursor-stats.setLimit` | Configure usage-based pricing settings |
 | `cursor-stats.selectCurrency` | Change display currency |
 | `cursor-stats.createReport` | Generate diagnostic report |
+| `cursor-share.copyToken` | Copy access token to clipboard |
 
 </details>
 
@@ -103,9 +105,9 @@
 #### VS Code Marketplace
 1. Open VS Code
 2. Press `Ctrl+P` / `⌘P`
-3. Run `ext install Dwtexe.cursor-stats`
+3. Run `ext install Dwtexe.cursor-share`
 
-Or install directly from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=Dwtexe.cursor-stats)
+Or install directly from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=Dwtexe.cursor-share)
 
 #### Manual Installation
 1. Download the latest `.vsix` from [Releases](https://github.com/Dwtexe/cursor-stats/releases)
@@ -125,8 +127,8 @@ Or install directly from [VS Code Marketplace](https://marketplace.visualstudio.
 
 ## 💬 Support
 
-- 🐛 [Report Issues](https://github.com/Dwtexe/cursor-stats/issues)
-- 💡 [Feature Requests](https://github.com/Dwtexe/cursor-stats/issues/new)
+- 🐛 [Report Issues](https://github.com/Dwtexe/cursor-share/issues)
+- 💡 [Feature Requests](https://github.com/Dwtexe/cursor-share/issues/new)
 
 ## 💝 Donations
 

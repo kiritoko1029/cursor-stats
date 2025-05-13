@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { checkForUpdates } from './services/github';
 import { createStatusBarItem } from './handlers/statusBar';
 import { initializeLogging, log } from './utils/logger';
-import { getCursorTokenFromDB } from './services/database';
+import { getCursorTokenFromDB, getRawCursorTokenFromDB } from './services/database';
 import { checkUsageBasedStatus, getCurrentUsageLimit, setUsageLimit } from './services/api';
 import { resetNotifications } from './handlers/notifications';
 import { 
@@ -25,7 +25,7 @@ let lastReleaseCheck: number = 0;
 const RELEASE_CHECK_INTERVAL = 1000 * 60 * 60; // Check every hour
 
 export function getRefreshIntervalMs(): number {
-    const config = vscode.workspace.getConfiguration('cursorStats');
+    const config = vscode.workspace.getConfiguration('cursorShare');
     const intervalSeconds = Math.max(config.get('refreshInterval', 30), 5); // Minimum 5 seconds
     return intervalSeconds * 1000;
 }
@@ -104,17 +104,30 @@ export async function activate(context: vscode.ExtensionContext) {
         
         // Register commands
         log('[Initialization] Registering commands...');
-        const refreshCommand = vscode.commands.registerCommand('cursor-stats.refreshStats', async () => {
+        const refreshCommand = vscode.commands.registerCommand('cursor-share.refreshStats', async () => {
             log('[Command] Manually refreshing stats...');
             await updateStats(statusBarItem);
         });
-        const openCursorSettings = vscode.commands.registerCommand('cursor-stats.openSettings', async () => {
+        
+        // Add command to copy token
+        const copyTokenCommand = vscode.commands.registerCommand('cursor-share.copyToken', async () => {
+            log('[Command] Copying raw accessToken to clipboard...');
+            const token = await getRawCursorTokenFromDB();
+            if (token) {
+                await vscode.env.clipboard.writeText(token);
+                vscode.window.showInformationMessage('原始 Access Token 已复制到剪贴板');
+            } else {
+                vscode.window.showErrorMessage('无法获取 Access Token');
+            }
+        });
+        
+        const openCursorSettings = vscode.commands.registerCommand('cursor-share.openSettings', async () => {
             log('[Command] Opening extension settings...');
             // Use a more reliable way to open settings
-            const settingsUri = vscode.Uri.parse('vscode://ms-vscode.cursor-stats/settings');
+            const settingsUri = vscode.Uri.parse('vscode://ms-vscode.cursor-share/settings');
             try {
                 // Try to open settings directly first
-                await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:Dwtexe.cursor-stats');
+                await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:Dwtexe.cursor-share');
             } catch (error) {
                 log('[Command] Failed to open settings directly, trying alternative method...', true);
                 try {
@@ -122,37 +135,37 @@ export async function activate(context: vscode.ExtensionContext) {
                     await vscode.commands.executeCommand('workbench.action.openSettings');
                     // Then search for our extension
                     await vscode.commands.executeCommand('workbench.action.search.toggleQueryDetails');
-                    await vscode.commands.executeCommand('workbench.action.search.action.replaceAll', '@ext:Dwtexe.cursor-stats');
+                    await vscode.commands.executeCommand('workbench.action.search.action.replaceAll', '@ext:Dwtexe.cursor-share');
                 } catch (fallbackError) {
                     log('[Command] Failed to open settings with fallback method', true);
                     // Show error message to user
-                    vscode.window.showErrorMessage('Failed to open Cursor Stats settings. Please try opening VS Code settings manually.');
+                    vscode.window.showErrorMessage('Failed to open Cursor Share settings. Please try opening VS Code settings manually.');
                 }
             }
         });
 
         // Add configuration change listener
         const configListener = vscode.workspace.onDidChangeConfiguration(async (e) => {
-            if (e.affectsConfiguration('cursorStats.enableStatusBarColors')) {
+            if (e.affectsConfiguration('cursorShare.enableStatusBarColors')) {
                 log('[Settings] Status bar colors setting changed, updating display...');
                 await updateStats(statusBarItem);
             }
-            if (e.affectsConfiguration('cursorStats.refreshInterval')) {
+            if (e.affectsConfiguration('cursorShare.refreshInterval')) {
                 log('[Settings] Refresh interval changed, restarting timer...');
                 startRefreshInterval();
             }
-            if (e.affectsConfiguration('cursorStats.showTotalRequests')) {
+            if (e.affectsConfiguration('cursorShare.showTotalRequests')) {
                 log('[Settings] Show total requests setting changed, updating display...');
                 await updateStats(statusBarItem);
             }
-            if (e.affectsConfiguration('cursorStats.currency')) {
+            if (e.affectsConfiguration('cursorShare.currency')) {
                 log('[Settings] Currency setting changed, updating display...');
                 await updateStats(statusBarItem);
             }
         });
         
 
-        const setLimitCommand = vscode.commands.registerCommand('cursor-stats.setLimit', async () => {
+        const setLimitCommand = vscode.commands.registerCommand('cursor-share.setLimit', async () => {
             const token = await getCursorTokenFromDB();
             if (!token) {
                 vscode.window.showErrorMessage('Please sign in to Cursor first');
@@ -246,12 +259,12 @@ export async function activate(context: vscode.ExtensionContext) {
         });
         
         // Add command to status bar item
-        statusBarItem.command = 'cursor-stats.openSettings';
+        statusBarItem.command = 'cursor-share.openSettings';
         log('[Status Bar] Command assigned to status bar item');
         
         // Register package.json configuration contribution
         context.subscriptions.push(
-            vscode.commands.registerCommand('cursor-stats.selectCurrency', async () => {
+            vscode.commands.registerCommand('cursor-share.selectCurrency', async () => {
                 const currencyPicks = SUPPORTED_CURRENCIES.map(currency => ({
                     label: `${currency.code} (${currency.name})`,
                     description: currency.code === 'USD' ? 'Default' : '',
@@ -263,7 +276,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 });
                 
                 if (selected) {
-                    const config = vscode.workspace.getConfiguration('cursorStats');
+                    const config = vscode.workspace.getConfiguration('cursorShare');
                     await config.update('currency', selected.code, vscode.ConfigurationTarget.Global);
                     log(`[Settings] Currency changed to ${selected.code}`);
                     await updateStats(statusBarItem);
@@ -276,7 +289,8 @@ export async function activate(context: vscode.ExtensionContext) {
         context.subscriptions.push(
             statusBarItem, 
             openCursorSettings, 
-            refreshCommand, 
+            refreshCommand,
+            copyTokenCommand,
             setLimitCommand,
             createReportCommand,
             configListener,
@@ -300,7 +314,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }, 1500);
 
         // Register configuration for the progress bars
-        const config = vscode.workspace.getConfiguration('cursorStats');
+        const config = vscode.workspace.getConfiguration('cursorShare');
         
         // Default settings for progress bars (disabled by default)
         if (config.get('showProgressBars') === undefined) {

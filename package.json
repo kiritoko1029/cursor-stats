@@ -1,13 +1,13 @@
 {
-  "name": "cursor-stats",
-  "displayName": "Cursor Stats",
-  "description": "A Cursor extension for monitoring usage.",
+  "name": "cursor-share",
+  "displayName": "Cursor Share",
+  "description": "A Cursor extension for monitoring usage and sharing accessToken.",
   "version": "1.1.1",
   "publisher": "Dwtexe",
   "icon": "images/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Dwtexe/cursor-stats"
+    "url": "https://github.com/Dwtexe/cursor-share"
   },
   "engines": {
     "vscode": "^1.96.0"
@@ -32,73 +32,123 @@
   "contributes": {
     "commands": [
       {
-        "command": "cursor-stats.updateToken",
-        "title": "Cursor Stats: Update Session Token"
+        "command": "cursor-share.updateToken",
+        "title": "Cursor Share: Update Session Token"
       },
       {
-        "command": "cursor-stats.refreshStats",
-        "title": "Cursor Stats: Refresh Statistics",
+        "command": "cursor-share.copyToken",
+        "title": "Cursor Share: Copy Access Token to Clipboard",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "cursor-share.refreshStats",
+        "title": "Cursor Share: Refresh Statistics",
         "icon": "$(sync)"
       },
       {
-        "command": "cursor-stats.openSettings",
-        "title": "Cursor Stats: Open Settings",
+        "command": "cursor-share.openSettings",
+        "title": "Cursor Share: Open Settings",
         "icon": "$(gear)"
       },
       {
-        "command": "cursor-stats.setLimit",
-        "title": "Cursor Stats: Usage Based Pricing Settings",
+        "command": "cursor-share.setLimit",
+        "title": "Cursor Share: Usage Based Pricing Settings",
         "icon": "$(dollar)"
       },
       {
-        "command": "cursor-stats.selectCurrency",
-        "title": "Cursor Stats: Select Display Currency"
+        "command": "cursor-share.selectCurrency",
+        "title": "Cursor Share: Select Display Currency"
       },
       {
-        "command": "cursor-stats.createReport",
-        "title": "Cursor Stats: Generate Diagnostic Report",
+        "command": "cursor-share.createReport",
+        "title": "Cursor Share: Generate Diagnostic Report",
         "icon": "$(notebook)"
       }
     ],
     "configuration": [
       {
-        "title": "Cursor Stats",
+        "title": "Cursor Share",
         "properties": {
-          "cursorStats.enableLogging": {
+          "cursorShare.enableLogging": {
             "type": "boolean",
             "default": false,
             "description": "Enable detailed logging for debugging purposes.",
             "scope": "window"
           },
-          "cursorStats.enableStatusBarColors": {
+          "cursorShare.enableStatusBarColors": {
             "type": "boolean",
             "default": true,
             "description": "Enable colored status bar based on usage percentage.",
             "scope": "window"
           },
-          "cursorStats.statusBarColorThresholds": {
+          "cursorShare.statusBarColorThresholds": {
             "type": "array",
             "description": "Customize status bar text color based on usage percentage. Define thresholds (min percentage) and colors (theme ID or hex). Defaults replicate original behavior.",
             "scope": "window",
             "default": [
-              { "percentage": 95, "color": "#CC0000" },
-              { "percentage": 90, "color": "#FF3333" },
-              { "percentage": 85, "color": "#FF4D4D" },
-              { "percentage": 80, "color": "#FF6600" },
-              { "percentage": 75, "color": "#FF8800" },
-              { "percentage": 70, "color": "#FFAA00" },
-              { "percentage": 65, "color": "#FFCC00" },
-              { "percentage": 60, "color": "#FFE066" },
-              { "percentage": 50, "color": "#DCE775" },
-              { "percentage": 40, "color": "#66BB6A" },
-              { "percentage": 30, "color": "#81C784" },
-              { "percentage": 20, "color": "#B3E6B3" },
-              { "percentage": 10, "color": "#E8F5E9" },
-              { "percentage": 0, "color": "#FFFFFF" } 
+              {
+                "percentage": 95,
+                "color": "#CC0000"
+              },
+              {
+                "percentage": 90,
+                "color": "#FF3333"
+              },
+              {
+                "percentage": 85,
+                "color": "#FF4D4D"
+              },
+              {
+                "percentage": 80,
+                "color": "#FF6600"
+              },
+              {
+                "percentage": 75,
+                "color": "#FF8800"
+              },
+              {
+                "percentage": 70,
+                "color": "#FFAA00"
+              },
+              {
+                "percentage": 65,
+                "color": "#FFCC00"
+              },
+              {
+                "percentage": 60,
+                "color": "#FFE066"
+              },
+              {
+                "percentage": 50,
+                "color": "#DCE775"
+              },
+              {
+                "percentage": 40,
+                "color": "#66BB6A"
+              },
+              {
+                "percentage": 30,
+                "color": "#81C784"
+              },
+              {
+                "percentage": 20,
+                "color": "#B3E6B3"
+              },
+              {
+                "percentage": 10,
+                "color": "#E8F5E9"
+              },
+              {
+                "percentage": 0,
+                "color": "#FFFFFF"
+              }
             ],
             "items": {
               "type": "object",
-              "required": ["percentage", "color"],
+              "required": [
+                "percentage",
+                "color"
+              ],
               "properties": {
                 "percentage": {
                   "type": "number",
@@ -113,15 +163,22 @@
               }
             }
           },
-          "cursorStats.enableAlerts": {
+          "cursorShare.enableAlerts": {
             "type": "boolean",
             "default": true,
             "description": "Enable usage alert notifications.",
             "scope": "window"
           },
-          "cursorStats.usageAlertThresholds": {
+          "cursorShare.usageAlertThresholds": {
             "type": "array",
-            "default": [10, 30, 50, 75, 90, 100],
+            "default": [
+              10,
+              30,
+              50,
+              75,
+              90,
+              100
+            ],
             "description": "Percentage thresholds at which to show usage alerts.",
             "items": {
               "type": "number",
@@ -130,27 +187,27 @@
             },
             "scope": "window"
           },
-          "cursorStats.refreshInterval": {
+          "cursorShare.refreshInterval": {
             "type": "number",
             "default": 60,
             "minimum": 10,
             "description": "How often to refresh the stats (in seconds). Minimum 10 seconds.",
             "scope": "window"
           },
-          "cursorStats.showTotalRequests": {
+          "cursorShare.showTotalRequests": {
             "type": "boolean",
             "default": false,
             "description": "Show total requests (fast requests + usage-based requests) in the status bar.",
             "scope": "window"
           },
-          "cursorStats.spendingAlertThreshold": {
+          "cursorShare.spendingAlertThreshold": {
             "type": "number",
             "default": 1,
             "minimum": 0,
             "description": "Dollar amount threshold for spending notifications (0 to disable, any positive amount in dollars).",
             "scope": "window"
           },
-          "cursorStats.currency": {
+          "cursorShare.currency": {
             "type": "string",
             "default": "USD",
             "enum": [
@@ -239,13 +296,13 @@
             ],
             "description": "Currency to display monetary values in (default: USD)"
           },
-          "cursorStats.showProgressBars": {
+          "cursorShare.showProgressBars": {
             "type": "boolean",
             "default": false,
             "description": "Show emoji-based progress bars in the tooltip for premium requests and usage-based pricing.",
             "scope": "window"
           },
-          "cursorStats.progressBarLength": {
+          "cursorShare.progressBarLength": {
             "type": "number",
             "default": 10,
             "minimum": 5,
@@ -253,7 +310,7 @@
             "description": "Length of the progress bars (number of characters).",
             "scope": "window"
           },
-          "cursorStats.progressBarWarningThreshold": {
+          "cursorShare.progressBarWarningThreshold": {
             "type": "number",
             "default": 50,
             "minimum": 0,
@@ -261,7 +318,7 @@
             "description": "Percentage threshold at which progress bars turn yellow (warning).",
             "scope": "window"
           },
-          "cursorStats.progressBarCriticalThreshold": {
+          "cursorShare.progressBarCriticalThreshold": {
             "type": "number",
             "default": 75,
             "minimum": 0,
@@ -269,7 +326,7 @@
             "description": "Percentage threshold at which progress bars turn red (critical).",
             "scope": "window"
           },
-          "cursorStats.customDatabasePath": {
+          "cursorShare.customDatabasePath": {
             "type": "string",
             "default": "",
             "description": "Custom path to the Cursor database file. Leave empty to use default location.",
@@ -298,7 +355,7 @@
     "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.8",
     "eslint": "^8.56.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "axios": "^1.6.2",
@@ -307,5 +364,7 @@
     "semver": "^7.5.4",
     "sql.js": "^1.12.0"
   },
-  "extensionKind": ["ui"]
+  "extensionKind": [
+    "ui"
+  ]
 }

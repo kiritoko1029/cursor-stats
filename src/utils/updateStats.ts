@@ -111,7 +111,7 @@ export async function updateStats(statusBarItem: vscode.StatusBarItem) {
             costText = ` $(credit-card) ${formattedActualCost}`;
 
             // Calculate total usage text if enabled
-            const config = vscode.workspace.getConfiguration('cursorStats');
+            const config = vscode.workspace.getConfiguration('cursorShare');
             const showTotalRequests = config.get<boolean>('showTotalRequests', false);
             
             if (showTotalRequests) {

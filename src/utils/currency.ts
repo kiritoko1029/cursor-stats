@@ -219,7 +219,7 @@ export function formatCurrency(amount: number, currencyCode: string, decimals: n
 }
 
 export function getCurrentCurrency(): string {
-    const config = vscode.workspace.getConfiguration('cursorStats');
+    const config = vscode.workspace.getConfiguration('cursorShare');
     return config.get<string>('currency', 'USD');
 }
 

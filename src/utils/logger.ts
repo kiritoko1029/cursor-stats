@@ -17,11 +17,15 @@ export function initializeLogging(context: vscode.ExtensionContext): void {
 }
 
 export function log(message: string, data?: any, error: boolean = false): void {
-    const config = vscode.workspace.getConfiguration('cursorStats');
-    const loggingEnabled = config.get<boolean>('enableLogging', false);
+    if (!outputChannel) {
+        return;
+    }
+
+    const config = vscode.workspace.getConfiguration('cursorShare');
+    const enableLogging = config.get<boolean>('enableLogging', false);
     
     const shouldLog = error || 
-                     (loggingEnabled && (
+                     (enableLogging && (
                         message.includes('[Initialization]') || 
                         message.includes('[Status Bar]') ||
                         message.includes('[Database]') ||

@@ -23,7 +23,7 @@ export async function checkAndNotifySpending(totalSpent: number) {
         return;
     }
 
-    const config = vscode.workspace.getConfiguration('cursorStats');
+    const config = vscode.workspace.getConfiguration('cursorShare');
     const spendingThreshold = config.get<number>('spendingAlertThreshold', 1);
     
     // If threshold is 0, spending notifications are disabled
@@ -75,7 +75,7 @@ export async function checkAndNotifyUsage(usageInfo: UsageInfo) {
         return;
     }
 
-    const config = vscode.workspace.getConfiguration('cursorStats');
+    const config = vscode.workspace.getConfiguration('cursorShare');
     const enableAlerts = config.get<boolean>('enableAlerts', true);
     
     if (!enableAlerts) {

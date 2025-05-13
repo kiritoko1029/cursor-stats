@@ -10,7 +10,7 @@ import { execSync } from 'child_process';
 
 export function getCursorDBPath(): string {
     // Check for custom path in settings
-    const config = vscode.workspace.getConfiguration('cursorStats');
+    const config = vscode.workspace.getConfiguration('cursorShare');
     const customPath = config.get<string>('customDatabasePath');
     
     if (customPath && customPath.trim() !== '') {
@@ -34,6 +34,42 @@ export function getCursorDBPath(): string {
         return path.join(os.homedir(), 'Library', 'Application Support', folderName, 'User', 'globalStorage', 'state.vscdb');
     }
     return path.join(os.homedir(), '.config', folderName, 'User', 'globalStorage', 'state.vscdb');
+}
+
+export async function getRawCursorTokenFromDB(): Promise<string | undefined> {
+    try {
+        const dbPath = getCursorDBPath();
+        log(`[Database] Attempting to open database at: ${dbPath}`);
+
+        if (!fs.existsSync(dbPath)) {
+            log('[Database] Database file does not exist', true);
+            return undefined;
+        }
+
+        const dbBuffer = fs.readFileSync(dbPath);
+        const SQL = await initSqlJs();
+        const db = new SQL.Database(new Uint8Array(dbBuffer));
+
+        const result = db.exec("SELECT value FROM ItemTable WHERE key = 'cursorAuth/accessToken'");
+        
+        if (!result.length || !result[0].values.length) {
+            log('[Database] No token found in database');
+            db.close();
+            return undefined;
+        }
+
+        const token = result[0].values[0][0] as string;
+        log(`[Database] Raw token retrieved, starts with: ${token.substring(0, 20)}...`);
+        db.close();
+        return token;
+    } catch (error: any) {
+        log('[Database] Error opening database: ' + error, true);
+        log('[Database] Database error details: ' + JSON.stringify({
+            message: error.message,
+            stack: error.stack
+        }), true);
+        return undefined;
+    }
 }
 
 export async function getCursorTokenFromDB(): Promise<string | undefined> {
@@ -95,6 +131,7 @@ export async function getCursorTokenFromDB(): Promise<string | undefined> {
         return undefined;
     }
 }
+
 export function getWindowsUsername(): string | undefined {
     try {
       // Executes cmd.exe and echoes the %USERNAME% variable
